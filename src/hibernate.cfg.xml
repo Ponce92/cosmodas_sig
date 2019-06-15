@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD//EN"
+        "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory name="SessionFactory">
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgresPlusDialect</property>
+        <property name="connection.url" >jdbc:postgresql://localhost:5432/sig_db</property>
+        <property name="connection.username">sig_user</property>
+        <property name="connection.password">sig_pass</property>
+
+
+        <!-- DB schema will be updated if needed -->
+
+        <property name="hibernate.hbm2ddl.auto">update</property>
+
+        <mapping class="com.rq.models.security.Usuario"/>
+        <mapping class="com.rq.models.security.Rol"/>
+        <mapping class="com.rq.models.security.Menu"/>
+        <mapping class="com.rq.models.security.SubMenu"/>
+        <mapping class="com.rq.models.share.TipoProducto"/>
+        <mapping class="com.rq.models.share.Inventario"/>
+        <mapping class="com.rq.models.share.Producto"/>
+        <mapping class="com.rq.models.share.Sucursal"/>
+        <mapping class="com.rq.models.share.Cliente"/>
+        <mapping class="com.rq.models.share.Proveedor"/>
+<!--        <mapping class="com.rq.models.share.Movimiento"/>-->
+<!--        <mapping class="com.rq.models.share.Compra"/>-->
+<!--        <mapping class="com.rq.models.share.Factura"/>-->
+
+
+    </session-factory>
+</hibernate-configuration>

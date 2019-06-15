@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui" >
+
+    <ui:composition template="/views/layout/ui.xhtml">
+        <ui:define name="title">Submenus</ui:define>
+        <ui:define name="cuerpo">
+            <h:form id="form">
+                <p:growl id="growl" showDetail="true" />
+                <p></p>
+                <h:panelGrid columns="2">
+                    <p:selectOneMenu id="selectRol" converter="RolConverter" value="#{submenuCtrl.rol}" style="width: 200px;">
+                        <p:ajax  update="form:submenusDt:,form:growl" listener="#{submenuCtrl.bsqRol}"/>
+                        <f:selectItem itemLabel="Seleccione rol" itemValue="#{null}"/>
+                        <f:selectItems value="#{submenuCtrl.rolesList}"
+                                       var="rol"
+                                       itemLabel="#{rol.nombre}"
+                                       itemValue="#{rol}"/>
+                    </p:selectOneMenu>
+
+                </h:panelGrid>
+
+
+                <p:spacer height="20"/>
+
+                <p:dataTable var="submenu"
+                             id="submenusDt"
+                             value="#{submenuCtrl.rol.subMenus}"
+                             rows="8"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+                    <f:facet name="header">Submenus asociador a #{submenuCtrl.rol.nombre} </f:facet>
+
+                    <p:column headerText="Id" width="50">
+                        <h:outputText value="#{submenu.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{submenu.nombre}" />
+                    </p:column>
+
+                    <p:column headerText="Descripcion">
+                        <h:outputText value="#{submenu.descripcion}" />
+                    </p:column>
+
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{submenu.estado ? 'Activo':'Inactivo'}" />
+                    </p:column>
+                    <p:column headerText="Menu padre">
+                        <h:outputText value="#{submenu.menuPadre.nombre}" />
+                    </p:column>
+                    <f:facet name="footer">
+                        <p:commandButton    value="Agregar submenu"
+                                            update="form:opcionesDt,form:growl"
+                                            action="#{submenuCtrl.getSubmenuss}"
+                                            style="margin-right:20px;"
+                                            icon="pi pi-plus" />
+                        <p:commandButton 	update=":form:growl"
+                                            value="Guardar cambios"
+                                            action="#{submenuCtrl.save}"
+                                            style="margin-right:20px;"
+                                            icon="pi pi-save" />
+                    </f:facet>
+                </p:dataTable>
+
+
+    <!--
+            #================================================================================================
+            #   Seccion de dialogos de la vista principal
+            #================================================================================================
+     -->
+
+                <p:dialog header="Rol :: Agregar submenu" widgetVar="add"  width="800" resizable="false">
+                    <p:dataTable var="smenu"
+                                 id="opcionesDt"
+                                 value="#{submenuCtrl.subMenuList}"
+                                 paginator="true"
+                                 rows="7"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+                        <f:facet name="header">Opciones de submenus </f:facet>
+
+                        <p:column headerText="Id" width="50">
+                            <h:outputText value="#{smenu.id}" />
+                        </p:column>
+
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{smenu.nombre}" />
+                        </p:column>
+
+                        <p:column headerText="Descripcion">
+                            <h:outputText value="#{smenu.descripcion}" />
+                        </p:column>
+
+                        <p:column filterBy="#{smenu.menuPadre.nombre}" headerText="Menu padre">
+                            <h:outputText value="#{smenu.menuPadre.nombre}" />
+                        </p:column>
+                        <p:column headerText="Acction">
+                            <p:commandButton 	update="form:growl,form:submenusDt"
+                                                action="#{submenuCtrl.add(smenu)}"
+                                                style="margin-left:20px;"
+                                                icon="pi pi-plus" />
+                        </p:column>
+                        <f:facet name="footer"><i class="pi pi-align-justify"></i></f:facet>
+                    </p:dataTable>
+                </p:dialog>
+
+            </h:form>
+            <style type="text/css">
+                p{
+                    margin-top: 15px;
+                    margin-bottom: 5px;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui" >
+
+    <ui:composition template="/views/layout/ui.xhtml">
+        <ui:define name="title">Roles</ui:define>
+        <ui:define name="cuerpo">
+            <h:form id="form">
+                <p:growl id="growl" life="2000" showDetail="true" />
+                <p:spacer height="20"/>
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:commandButton value="Nuevo"
+                                     icon="pi pi-plus"
+                                     onclick="PF('dlg01').show();"/>
+
+                </h:panelGrid>
+                <p:spacer height="10"/>
+
+
+                <p:dataTable var="rol"
+                             id="rolesDt"
+                             value="#{rolCtrl.rolsList}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+                    <f:facet name="header">Roles registrados en el sistema </f:facet>
+
+                    <p:column headerText="Id" width="50" style="text-align: center;">
+                        <h:outputText value="#{rol.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{rol.nombre}" />
+                    </p:column>
+
+                    <p:column headerText="Descripcion">
+                        <h:outputText value="#{rol.descripcion}" />
+                    </p:column>
+
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{rol.estado ? 'Activo':'Inactivo'}" />
+                    </p:column>
+
+                    <p:column headerText="Acciones" width="100" style="text-align: center;">
+                        <p:commandButton update=":form_edt:editPg"  oncomplete="PF('edit_modal').show()" icon="pi pi-search" >
+                            <f:setPropertyActionListener value="#{rol}"
+                                                         target="#{rolCtrl.rolSeleccionado}" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+    <!--
+            #================================================================================================
+            #   Seccion de dialogos de la vista principal
+            #================================================================================================
+     -->
+                <p:dialog header="Rol :: Crear" widgetVar="dlg01" width="390"  resizable="false">
+                    <p><strong>Nombre :</strong></p>
+                    <p:inputText value="#{rolCtrl.rol.nombre}"
+                                 style="width:350px;"
+                                 placeholder="rol . . ."
+                    >
+                        <f:validator validatorId="nombreVal"/>
+                    </p:inputText>
+
+                    <p><strong>Descripcion :</strong></p>
+                    <p:inputTextarea rows="3" cols="45"  value="#{rolCtrl.rol.descripcion}">
+                       <f:validator validatorId="descVal"/>
+                    </p:inputTextarea>
+
+                    <p><strong>Estado :</strong></p>
+                    <p:selectBooleanCheckbox value="#{rolCtrl.rol.estado}" itemLabel="Activo"/>
+
+                    <p></p>
+
+                    <f:facet name="footer">
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton 	value="Cancelar"
+                                                    action="#{rolCtrl.resetRol}"
+                                                    onclick="PF('dlg01').hide();"
+                                                    style="margin-right:20px;"
+                                                    icon="pi pi-times" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:commandButton update=":form:growl,:form:rolesDt"
+                                                 value="Guardar"
+                                                 actionListener="#{rolCtrl.guardarRol}"
+                                                 style="margin-right:20px;"
+                                                 icon="pi pi-save"/>
+                            </p:column>
+                        </p:row>
+
+                    </f:facet>
+                </p:dialog>
+
+
+            </h:form>
+
+            <h:form id="form_edt">
+
+                <p:dialog header="Rol :: Editar" widgetVar="edit_modal"  width="390" resizable="false"  >
+                    <h:panelGroup id="editPg">
+                        <p:inputText value="#{rolCtrl.rolSeleccionado.id}"
+                                     type="hidden"/>
+
+                        <p><strong>Nombre :</strong></p>
+                        <p:inputText value="#{rolCtrl.rolSeleccionado.nombre}"
+                                     style="width: 350px;"
+                        >
+                            <f:validator validatorId="nombreVal"/>
+                        </p:inputText>
+
+
+                        <p><strong>Descripcion :</strong></p>
+                        <p:inputTextarea rows="3" cols="45"  value="#{rolCtrl.rolSeleccionado.descripcion}">
+                            <f:validator validatorId="descVal"/>
+                        </p:inputTextarea>
+
+                        <p><strong>Estado :</strong></p>
+                        <p:selectBooleanCheckbox value="#{rolCtrl.rolSeleccionado.estado}" itemLabel="Activo"/>
+                    </h:panelGroup>
+
+
+                    <f:facet name="footer">
+                        <div class="ui-g">
+                            <div class="ui-g-4">
+                                <p:commandButton 	value="Cancelar"
+                                                    onclick="PF('edit_modal').hide();"
+                                                    icon="pi pi-times" />
+                            </div>
+                            <div class="ui-g-4">
+                                <p:commandButton update=":form:growl,:form:rolesDt"
+                                                 value="Actualizar"
+                                                 actionListener="#{rolCtrl.editar}"
+                                                 icon="pi pi-save"/>
+                            </div>
+                            <div class="ui-g-4">
+                                <p:commandButton update=":form:growl,:form:rolesDt"
+                                                 value="Eliminar"
+                                                 action="#{rolCtrl.eliminar}"
+                                                 icon="pi pi-trash"/>
+                            </div>
+                        </div>
+                    </f:facet>
+
+                </p:dialog>
+
+
+            </h:form>
+            <style type="text/css">
+                p{
+                    margin-top: 15px;
+                    margin-bottom: 5px;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>

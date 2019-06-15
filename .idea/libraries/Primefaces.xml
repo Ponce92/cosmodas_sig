@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="Primefaces" type="jsf-primefaces">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/Documents/Librerias/Primefaces7.0/primefaces-7.0-sources.jar!/" />
+      <root url="jar://$USER_HOME$/Documents/Librerias/Primefaces7.0/primefaces-7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

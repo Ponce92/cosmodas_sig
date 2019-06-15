@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui" >
+
+    <ui:composition template="/views/layout/ui.xhtml">
+        <ui:define name="title"> SubMenus </ui:define>
+        <ui:define name="cuerpo">
+
+            <h:form id="form">
+                <p:growl id="growl" life="2000" />
+                <p:spacer height="20"/>
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:commandButton value="Nuevo"
+                                     icon="pi pi-plus"
+                                     onclick="PF('crtMenu').show();"/>
+
+                </h:panelGrid>
+                <p:spacer height="10"/>
+
+
+                <p:dataTable var="res"
+                             value="#{subMenuCtrl.subMenuList}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+                    <f:facet name="header"> Sub Menus del sistema </f:facet>
+
+                    <p:column headerText="Id" width="50">
+                        <h:outputText value="#{res.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{res.nombre}" />
+                    </p:column>
+                    <p:column headerText="Url ">
+                        <h:outputText value="#{res.url}" />
+                    </p:column>
+
+                    <p:column headerText="Icono">
+                        <h:outputText value="#{res.icono}" />
+                    </p:column>
+
+
+                    <p:column headerText="Descripcion">
+                        <h:outputText value="#{res.descripcion}" />
+                    </p:column>
+
+
+
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{res.estado ? 'Activo':'Inactivo'}" />
+                    </p:column>
+
+                    <p:column headerText="Menu Padre">
+                        <h:outputText value="#{res.menuPadre.nombre}" />
+                    </p:column>
+
+                    <p:column headerText="Acciones" width="100">
+                        <p:commandButton update=":form"  oncomplete="PF('edtSubMenu').show()" icon="pi pi-search" >
+                            <f:setPropertyActionListener value="#{res}" target="#{subMenuCtrl.subMenuSeleccionado}" />
+                        </p:commandButton>
+                    </p:column>
+
+                </p:dataTable>
+
+    <!--
+            #================================================================================================
+            #   Seccion de dialogos de la vista principal
+            #================================================================================================
+     -->
+                <p:dialog header="Sub Menu :: Crear" widgetVar="crtMenu" width="390" modal="true">
+                    <p><strong>Nombre :</strong></p>
+
+                    <p:inputText id="nombre" value="#{subMenuCtrl.subMenu.nombre}" style="width: 350px;" >
+                        <f:validateRequired />
+                        <f:validateLength minimum="3" maximum="50"/>
+                    </p:inputText>
+                    <p:message for="nombre"/>
+
+                    <p><strong>Url :</strong></p>
+                    <p:inputText rows="3" cols="45"  value="#{subMenuCtrl.subMenu.url}">
+                        <f:validateRequired />
+                        <f:validateLength minimum="4"/>
+                    </p:inputText>
+
+                    <p><strong>Menu padre :</strong></p>
+                    <p:selectOneMenu  value="#{subMenuCtrl.subMenu.menuPadre.id}" style="width:250px;" rendered="true">
+                        <f:selectItems value="#{subMenuCtrl.menuList}" var="res" itemLabel="#{res.nombre}" itemValue="#{res.id}"/>
+                    </p:selectOneMenu>
+
+                    <p><strong>Icono :</strong></p>
+                    <p:inputText value="#{subMenuCtrl.subMenu.icono}" style="width: 350px;" >
+                        <f:validateRequired />
+                        <f:validateLength minimum="3" maximum="25"/>
+                    </p:inputText>
+
+                    <p><strong>Descripcion :</strong></p>
+                    <p:inputTextarea rows="3" cols="45"  value="#{subMenuCtrl.subMenu.descripcion}">
+                        <f:validateRequired />
+                        <f:validateLength minimum="4"/>
+                    </p:inputTextarea>
+
+
+
+
+                    <p><strong>Estado :</strong></p>
+                    <p:selectBooleanCheckbox value="#{subMenuCtrl.subMenu.estado}" itemLabel="Activo"/>
+
+                    <p></p>
+
+                    <f:facet name="footer">
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton 	update="growl,form"
+                                                    value="Cancelar"
+                                                    action="#"
+                                                    onclick="PF('crtMenu').hide();"
+                                                    style="margin-right:20px;"
+                                                    icon="pi pi-times" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:commandButton update=":form:growl"
+                                                 value="Guardar"
+                                                 action="#{subMenuCtrl.saveSubMenu}"
+                                                 style="margin-right:20px;"
+                                                 icon="pi pi-save"/>
+                            </p:column>
+                        </p:row>
+
+                    </f:facet>
+                </p:dialog>
+
+                <p:dialog header="Rol :: Edicion" widgetVar="dlg02"  width="390" resizable="false" modal="true" >
+
+
+                    <p><strong>Nombre :</strong></p>
+                    <p:inputText value="#{rolCtrl.rolSeleccionado.nombre}" style="width: 350px;" />
+
+
+                    <p><strong>Descripcion :</strong></p>
+                    <p:inputTextarea rows="3" cols="45"  value="#{rolCtrl.rolSeleccionado.descripcion}"/>
+
+                    <p><strong>Estado :</strong></p>
+                    <p:selectBooleanCheckbox value="#{rolCtrl.rolSeleccionado.estado}" itemLabel="Activo"/>
+
+
+                    <f:facet name="footer">
+                        <div class="ui-g">
+                            <div class="ui-g-4">
+                                <p:commandButton 	update="growl,form"
+                                                    value="Cancelar"
+                                                    action="#{rolCtrl.resetRol}"
+                                                    onclick="PF('dlg01').hide();"
+                                                    style="margin-right:20px;"
+                                                    icon="pi pi-times" />
+                            </div>
+                            <div class="ui-g-4">
+                                <p:commandButton update="growl,form"
+                                                 value="Actualizar"
+                                                 actionListener="#{rolCtrl.guardarRol}"
+                                                 onclick="PF('dlg_edt').hide();"
+                                                 style="margin-right:20px;"
+                                                 icon="pi pi-save"/>
+                            </div>
+                            <div class="ui-g-4">
+                                <p:commandButton update="growl,form"
+                                                 value="Eliminar"
+                                                 actionListener="#{rolCtrl.guardarRol}"
+                                                 onclick="PF('dlg_edt').hide();"
+                                                 style="margin-right:20px;"
+                                                 icon="pi pi-trash"/>
+                            </div>
+                        </div>
+                    </f:facet>
+
+                </p:dialog>
+            </h:form>
+            <style type="text/css">
+                p{
+                    margin-top: 15px;
+                    margin-bottom: 5px;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>

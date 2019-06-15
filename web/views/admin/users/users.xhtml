@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+      
+    
+<ui:composition template="/views/layout/ui.xhtml">
+	<ui:define name="title">Usuarios</ui:define>
+	<ui:define name="cuerpo">
+
+		<p:spacer  height="25" />
+		<h:form id="form">
+				<p:growl id="growl" showDetail="true" />
+				
+				<h:panelGrid columns="2" cellpadding="5">
+					<h:panelGroup/>
+    				<p:commandButton value="Nuevo" icon="pi pi-plus" type="button" onclick="PF('crtDlg').show();" />
+				</h:panelGrid>
+				
+			   	<p:dataTable 	var="user"
+								id="usersDt"
+							 	value="#{userCtrl.userList}"
+								rows="8"
+								paginator="true"
+								paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+			   		<f:facet name="header">Usuarios registrados</f:facet>
+
+				    <p:column headerText="Id" width="50" style="text-align: center">
+				        <h:outputText value="#{user.id}" />
+				    </p:column>
+				    
+				    <p:column headerText="Nombre">
+				        <h:outputText value="#{user.username}" />
+				    </p:column>
+
+					<p:column headerText="Estado">
+						<h:outputText value="Activo" rendered="#{user.estado eq 'ACT'}"/>
+						<h:outputText value="Inactivo" rendered="#{user.estado eq 'INA'}"/>
+					</p:column>
+					<p:column headerText="Rol asignado">
+						<h:outputText value="#{user.rol.nombre}" />
+					</p:column>
+
+					<p:column headerText="Acciones" width="90" style="text-align: center;">
+						<p:commandButton  oncomplete="PF('edit_dialgo').show();" icon="pi pi-search" update=":form:editForm" >
+							<f:setPropertyActionListener value="#{user}"
+														 target="#{userCtrl.usuarioSeleccionado}" />
+						</p:commandButton>
+					</p:column>
+				    
+				</p:dataTable>
+				
+		<!-- Dialog de creacion de un nuevo Menu -->
+			<p:dialog header="Usuario :: Nuevo" widgetVar="crtDlg" width="355" resizable="false">
+				<p><strong>Nombre de usuario :</strong></p>
+				<p:inputText value="#{userCtrl.usuario.username}"
+							 style="width: 330px;"
+							 placeholder="usuario">
+					<f:validator validatorId="nombreVal"></f:validator>
+				</p:inputText>
+
+				<p><strong>Password :</strong></p>
+					<p:password value="#{userCtrl.usuario.password}" style="width: 330px;" alt="password"/>
+
+					<p><strong>Confirme password :</strong></p>
+					<p:password value="#{userCtrl.password}" style="width: 330px;" alt="password"/>
+
+					<div class="ui-g">
+						<div class="ui-g-6">
+							<p><strong>Estado :</strong></p>
+							<p:selectOneMenu  value="#{userCtrl.usuario.estado}" style="width:150px;">
+								<f:selectItem itemLabel="Activo" itemValue="ACT" />
+								<f:selectItem itemLabel="Inactivo" itemValue="INA" />
+							</p:selectOneMenu>
+						</div>
+						<div class="ui-g-6">
+							<p><strong>Rol asignado :</strong></p>
+							<p:selectOneMenu converter="RolConverter"  value="#{userCtrl.usuario.rol}" style="width:150px;" rendered="true">
+								<f:selectItems value="#{userCtrl.rolesList}"
+											   var="rol"
+											   itemLabel="#{rol.nombre}"
+											   itemValue="#{rol}"/>
+							</p:selectOneMenu>
+						</div>
+					</div>
+					
+					<f:facet name="footer">
+						<div class="ui-g">
+							<div class="ui-g-2"></div>
+
+							<div class="ui-g-4">
+								<p:commandButton value="Cancelar"
+												 action="#"
+												 oncomplete="PF('crtDlg').hide()"
+												 style="margin-right:20px;"
+												 icon="pi pi-times" />
+							</div>
+							<div class="ui-g-4">
+								<p:commandButton update=":form:usersDt,:form:growl"
+												 value="Guardar"
+												 action="#{userCtrl.guardarUsuario}"
+												 style="margin-right:20px;"
+												 icon="pi pi-save" />
+							</div>
+							<div class="ui-g-2"></div>
+						</div>
+					</f:facet>
+
+				</p:dialog>
+
+			<p:dialog header="Usuario :: Editar" widgetVar="edit_dialgo" width="355" resizable="false">
+				<h:panelGroup id="editForm">
+
+					<p:inputText value="#{userCtrl.usuarioSeleccionado.id}" type="hidden"/>
+
+					<p><strong>Nombre de usuario :</strong></p>
+					<p:inputText value="#{userCtrl.usuarioSeleccionado.username}"
+								 required="true"
+								 style="width: 330px;"
+								 placeholder="usuario">
+						<f:validator validatorId="nombreVal"></f:validator>
+					</p:inputText>
+
+					<p><strong>Password :</strong></p>
+					<p:password value="#{userCtrl.psw1}" style="width: 330px;"/>
+
+					<p><strong>Confirme password :</strong></p>
+					<p:password value="#{userCtrl.psw2}" style="width: 330px;"/>
+
+					<div class="ui-g">
+						<div class="ui-g-6">
+							<p><strong>Estado :</strong></p>
+							<p:selectOneMenu  value="#{userCtrl.usuarioSeleccionado.estado}" style="width:155px;">
+								<f:selectItem itemLabel="Activo" itemValue="ACT" />
+								<f:selectItem itemLabel="Inactivo" itemValue="INA" />
+							</p:selectOneMenu>
+						</div>
+						<div class="ui-g-6">
+							<p><strong>Rol asignado :</strong></p>
+							<p:selectOneMenu converter="RolConverter"  value="#{userCtrl.usuarioSeleccionado.rol}" style="width:155px;" rendered="true">
+								<f:selectItems value="#{userCtrl.rolesList}"
+											   var="rol"
+											   itemLabel="#{rol.nombre}"
+											   itemValue="#{rol}"/>
+							</p:selectOneMenu>
+						</div>
+					</div>
+
+				</h:panelGroup>
+				<f:facet name="footer">
+					<div class="ui-g">
+
+						<div class="ui-g-4">
+							<p:commandButton update=":form"
+											 value="Cancelar"
+											 action="#"
+											 oncomplete="PF('edit_dialgo').hide()"
+											 icon="pi pi-times" />
+						</div>
+						<div class="ui-g-4">
+							<p:commandButton update=":form"
+											 value="Guardar"
+											 action="#{userCtrl.actualizar}"
+											 icon="pi pi-save" />
+						</div>
+						<div class="ui-g-4">
+							<p:commandButton update=":form:usersDt,:form:growl"
+											 value="Eliminar"
+											 action="#{userCtrl.eliminar}"
+											 icon="pi pi-trash" />
+						</div>
+					</div>
+				</f:facet>
+
+			</p:dialog>
+
+
+		</h:form>
+		
+		
+	</ui:define>
+</ui:composition>
+
+</html>

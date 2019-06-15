@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui" >
+
+    <ui:composition template="/views/layout/ui.xhtml">
+        <ui:define name="title">Ajustes de roles</ui:define>
+        <ui:define name="cuerpo">
+            <p:spacer height="20"/>
+            <h:form id="form">
+                <p:growl id="growl" life="2000" showDetail="true" />
+
+                <p></p>
+                <p:selectOneMenu id="selectRol" value="#{rolesAjustesCtrl.idRol}" style="width: 200px;">
+                    <p:ajax listener="#{rolesAjustesCtrl.bsqRol}" update=":form:menus,:form:menusAdd,:form:subMenus,:form:subMenusAdd"/>
+                    <f:selectItem itemLabel="Seleccione rol" itemValue=""/>
+                    <f:selectItems value="#{rolesAjustesCtrl.rolesList}"
+                                   var="res"
+                                   itemLabel="#{res.nombre}"
+                                   itemValue="#{res.id}"/>
+                </p:selectOneMenu>
+                <p></p>
+
+                <h:panelGrid >
+                    <p:dataTable id="menus" var="menu" value="#{rolesAjustesCtrl.rolSeleccionado.menus}" >
+                    <f:facet name="header">Menus asignados a #{rolesAjustesCtrl.rolSeleccionado.nombre}</f:facet>
+
+                    <p:column headerText="Id" width="30">
+                        <h:outputText value="#{menu.id}"/>
+                    </p:column>
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{menu.nombre}"/>
+                    </p:column>
+                    <p:column headerText="Descripcion">
+                        <h:outputText value="#{menu.descripcion}"/>
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <p:commandButton value="Agregar" onclick="PF('addMenuDlg').show()" type="button" icon="pi pi-plus">
+                        </p:commandButton>
+                    </f:facet>
+                </p:dataTable>
+                </h:panelGrid>
+
+                <h:panelGrid >
+                    <p:dataTable id="subMenus" var="res" value="#{rolesAjustesCtrl.rolSeleccionado.subMenus}" >
+                        <f:facet name="header">SubMenus a #{rolesAjustesCtrl.menuSeleccionado.nombre}</f:facet>
+
+                        <p:column headerText="Id" width="30">
+                            <h:outputText value="#{res.id}"/>
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{res.nombre}"/>
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{res.url}"/>
+                        </p:column>
+                        <p:column headerText="Nombre">
+                            <h:outputText value="#{res.estado}"/>
+                        </p:column>
+                        <p:column headerText="Url">
+                            <h:outputText value="#{res.descripcion}"/>
+                        </p:column>
+
+                        <f:facet name="footer">
+                            <p:commandButton value="Agregar" onclick="PF('addSubMenuDlg').show();" type="button" icon="pi pi-plus">
+                            </p:commandButton>
+                        </f:facet>
+                    </p:dataTable>
+                </h:panelGrid>
+
+    <!--
+            #================================================================================================
+            #   Seccion de dialogos de la vista principal
+            #================================================================================================
+     -->
+                <p:dialog header="Menus :: Agrear menu" widgetVar="addMenuDlg" width="600">
+                    <p:dataTable id="menusAdd" var="men" value="#{rolesAjustesCtrl.menuList}">
+                        <f:facet name="header">Menu Disponibles</f:facet>
+
+                        <p:column headerText="Nombre Sub menu">
+                            <h:outputText value="#{men.nombre}" />
+                        </p:column>
+                        <p:column headerText="Descripcion">
+                            <h:outputText value="#{men.descripcion}" />
+                        </p:column>
+                        <p:column headerText="Agregar">
+                            <p:commandButton icon="pi pi-plus" update=":form:menus,:form:menusAdd"  style="margin-left:20px;">
+                                <f:setPropertyActionListener value="#{men}" target="#{rolesAjustesCtrl.menuSeleccionado}"></f:setPropertyActionListener>
+                            </p:commandButton>
+                        </p:column>
+
+                        <f:facet name="footer"><i class="pi pi-align-justify"></i></f:facet>
+                    </p:dataTable>
+                </p:dialog>
+
+                <p:dialog header="Menus :: Agrear sub menus" widgetVar="addSubMenuDlg" width="600">
+                    <p:dataTable id="subMenusAdd" var="sm" value="#{rolesAjustesCtrl.subMenuList}">
+                        <f:facet name="header">Menu Disponibles</f:facet>
+
+                        <p:column headerText="Nombre Sub menu">
+                            <h:outputText value="#{sm.nombre}" />
+                        </p:column>
+                        <p:column headerText="Menu superior">
+                            <h:outputText value="#{sm.menuPadre.nombre}" />
+                        </p:column>
+                        <p:column headerText="Agregar">
+                            <p:commandButton icon="pi pi-plus" update=":form:subMenus,:form:subMenusAdd"  style="margin-left:20px;">
+                                <f:setPropertyActionListener value="#{sm}" target="#{rolesAjustesCtrl.subMenu}"></f:setPropertyActionListener>
+                            </p:commandButton>
+                        </p:column>
+
+                        <f:facet name="footer"><i class="pi pi-align-justify"></i></f:facet>
+                    </p:dataTable>
+                </p:dialog>
+
+                <p:spacer width="0" height="25"/>
+
+                <p:commandButton update=":form"
+                                 value="Guardar"
+                                 action="#{rolesAjustesCtrl.guardar}"
+                                 icon="pi pi-save">
+
+                </p:commandButton>
+            </h:form>
+            <style type="text/css">
+                p{
+                    margin-top: 15px;
+                    margin-bottom: 5px;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>

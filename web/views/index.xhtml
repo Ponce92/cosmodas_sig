@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+      
+    
+	<ui:composition template="/views/layout/ui.xhtml">
+		<ui:define name="title">Home</ui:define>
+		<ui:define name="cuerpo">
+
+			<h:form id="form">
+				<p:growl id="growl" showDetail="true"/>
+				<p:commandButton value="Agregar Sucursales"
+
+								 update=":form:growl"
+								 action="#{sessionCtrl.addSucursales}"
+								 style="margin-left: 15px;"
+
+				/>
+				<p:commandButton value="Inventario"
+								   update=":form:growl"
+								   action="#{sessionCtrl.addInventario}"
+								   style="margin-left: 15px;"
+
+				/>
+
+				<p:commandButton value="Clientes"
+								 update=":form:growl"
+								 action="#{sessionCtrl.addClientes}"
+								 style="margin-left: 15px;"
+
+				/>
+
+				<p:commandButton value="Proveedores"
+								 update=":form:growl"
+								 action="#{sessionCtrl.addProveedores}"
+								 style="margin-left: 15px;"
+
+				/>
+			</h:form>
+
+		</ui:define>
+	</ui:composition>
+	  
+</html>

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui" >
+
+    <ui:composition template="/views/layout/ui.xhtml">
+        <ui:define name="metadata"></ui:define>
+        <ui:define name="title">Menus</ui:define>
+        <ui:define name="cuerpo">
+
+            <h:form id="form">
+                <p:growl id="growl" life="2000" showDetail="true"/>
+                <p:spacer height="20"/>
+                <h:panelGrid columns="1" cellpadding="5">
+                    <p:commandButton value="Nuevo"
+                                     icon="pi pi-plus"
+                                     onclick="PF('crtMenu').show();"/>
+
+                </h:panelGrid>
+                <p:spacer height="10"/>
+
+
+                <p:dataTable var="menu"
+                             id="menusDt"
+                             value="#{menuCtrl.menuList}"
+                             selectionMode="single"
+                             selection="#{menuCtrl.menuSeleccionado}"
+                             rowKey="#{menu.id}"
+                             rows="6"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}">
+                    <f:facet name="header">Menus en el sistema </f:facet>
+
+                    <p:column headerText="Id" width="50">
+                        <h:outputText value="#{menu.id}" />
+                    </p:column>
+
+                    <p:column headerText="Nombre">
+                        <h:outputText value="#{menu.nombre}" />
+                    </p:column>
+
+                    <p:column headerText="Descripcion">
+                        <h:outputText value="#{menu.descripcion}" />
+                    </p:column>
+
+                    <p:column headerText="Estado">
+                        <h:outputText value="#{menu.is_activo ? 'Activo':'Inactivo'}" />
+                    </p:column>
+
+                    <f:facet name="footer">
+                        <p:commandButton process="menusDt" update=":form:menu_edt" icon="pi pi-search" value="Editar" oncomplete="PF('menu_edit').show()" />
+                    </f:facet>
+                </p:dataTable>
+
+    <!--
+            #================================================================================================
+            #   Seccion de dialogos de la vista principal
+            #================================================================================================
+     -->
+                <p:dialog header="Menu :: Crear" widgetVar="crtMenu" width="390" modal="true">
+                    <p><strong>Nombre :</strong></p>
+                    <p:inputText value="#{menuCtrl.menu.nombre}" style="width: 350px;" >
+                        <f:validateRequired />
+                        <f:validateLength minimum="3" maximum="50"/>
+                    </p:inputText>
+
+                    <p><strong>Descripcion :</strong></p>
+                    <p:inputTextarea rows="3" cols="45"  value="#{menuCtrl.menu.descripcion}">
+                        <f:validateRequired />
+                        <f:validateLength minimum="4"/>
+                    </p:inputTextarea>
+
+                    <p><strong>Icono :</strong></p>
+                    <p:inputText value="#{menuCtrl.menu.icono}" style="width: 350px;" >
+                        <f:validateRequired />
+                        <f:validateLength minimum="3" maximum="25"/>
+                    </p:inputText>
+
+                    <p><strong>Estado :</strong></p>
+                    <p:selectBooleanCheckbox value="#{menuCtrl.menu.is_activo}" itemLabel="Activo"/>
+
+                    <p></p>
+
+                    <f:facet name="footer">
+                        <p:row>
+                            <p:column colspan="2">
+                                <p:commandButton 	value="Cancelar"
+                                                    onclick="PF('crtMenu').hide();"
+                                                    style="margin-right:20px;"
+                                                    icon="pi pi-times" />
+                            </p:column>
+                            <p:column colspan="2">
+                                <p:commandButton update="growl,:form:menusDt"
+                                                 value="Guardar"
+                                                 action="#{menuCtrl.saveMenu}"
+                                                 style="margin-right:20px;"
+                                                 icon="pi pi-save"/>
+                            </p:column>
+                        </p:row>
+
+                    </f:facet>
+                </p:dialog>
+
+                <p:dialog header="Menu :: Edicion" widgetVar="menu_edit"    width="390" resizable="false" modal="true" >
+                    <h:panelGroup id="menu_edt">
+                        <p><strong>Nombre :</strong></p>
+                        <p:inputText value="#{menuCtrl.menuSeleccionado.nombre}" style="width: 350px;" />
+
+
+                        <p><strong>Descripcion :</strong></p>
+                        <p:inputTextarea rows="3" cols="45"  value="#{menuCtrl.menuSeleccionado.descripcion}"/>
+
+                        <p><strong>Icono :</strong></p>
+                        <p:inputText value="#{menuCtrl.menuSeleccionado.icono}" style="width: 350px;" >
+                            <f:validateRequired />
+                            <f:validateLength minimum="3" maximum="25"/>
+                        </p:inputText>
+
+                        <p><strong>Estado :</strong></p>
+                        <p:selectBooleanCheckbox value="#{menuCtrl.menuSeleccionado.is_activo}" itemLabel="Activo"/>
+
+                    </h:panelGroup>
+
+
+                    <f:facet name="footer">
+                        <div class="ui-g">
+                            <div class="ui-g-4">
+                                <p:commandButton    value="Cancelar"
+                                                    onclick="PF('menu_edit').hide();"
+                                                    style="margin-right:20px;"
+                                                    icon="pi pi-times"
+                                />
+                            </div>
+                            <div class="ui-g-4">
+                                <p:commandButton update="growl,:form:menusDt"
+                                                 value="Actualizar"
+                                                 actionListener="#{menuCtrl.updateMenu}"
+                                                 onclick="PF('menu_edit').hide();"
+                                                 style="margin-right:20px;"
+                                                 icon="pi pi-save"
+                                />
+                            </div>
+                            <div class="ui-g-4">
+                                <p:commandButton update="growl,:form:menusDt"
+                                                 value="Eliminar"
+                                                 action="#"
+                                                 style="margin-right:20px;"
+                                                 icon="pi pi-trash"/>
+                            </div>
+                        </div>
+                    </f:facet>
+
+                </p:dialog>
+
+            </h:form>
+            <style type="text/css">
+                p{
+                    margin-top: 15px;
+                    margin-bottom: 5px;
+                }
+            </style>
+        </ui:define>
+    </ui:composition>
+</html>
